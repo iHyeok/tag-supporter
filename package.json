@@ -1,0 +1,12 @@
+{
+  "name": "tag-supporter",
+  "version": "1.0.0",
+  "description": "Image Tag Supporter - 이미지 태깅 도구",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}
