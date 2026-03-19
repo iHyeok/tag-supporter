@@ -1,0 +1,14 @@
+name = "tag-supporter"
+compatibility_date = "2024-12-01"
+
+# Pages will serve static files from project root
+# Functions are in /functions directory
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tag-supporter-db"
+database_id = "0b6f4881-41ab-4e2b-af4d-cb88adb3a798"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "tag-supporter-images"

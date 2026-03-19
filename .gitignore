@@ -2,3 +2,4 @@ node_modules/
 imgs/
 tags/
 package-lock.json
+.wrangler/

@@ -1,12 +1,19 @@
 {
   "name": "tag-supporter",
-  "version": "1.0.0",
-  "description": "Image Tag Supporter - 이미지 태깅 도구",
+  "version": "2.0.0",
+  "description": "Image Tag Supporter - 이미지 태깅 도구 (Electron + Cloudflare Cloud)",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dev": "npx wrangler pages dev public --d1=DB --r2=BUCKET",
+    "deploy": "npx wrangler pages deploy public",
+    "migrate": "node scripts/migrate.js"
   },
   "devDependencies": {
-    "electron": "^33.0.0"
+    "electron": "^33.0.0",
+    "wrangler": "^4.0.0"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.33.0"
   }
 }

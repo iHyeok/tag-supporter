@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Tag Supporter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div id="topbar">
+    <div class="topbar-title">Image Tag Supporter</div>
+    <div class="topbar-actions">
+      <label id="upload-label" class="upload-btn">
+        Upload Images
+        <input type="file" id="upload-input" multiple accept="image/*" hidden />
+      </label>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div id="main">
+    <!-- Left Sidebar: File List -->
+    <div id="sidebar-left">
+      <div class="panel-header">Files</div>
+      <div id="file-list" class="panel-body"></div>
+    </div>
+
+    <!-- Center: Image + Tags -->
+    <div id="center">
+      <div id="image-container">
+        <div id="image-placeholder">Select an image from the file list</div>
+        <img id="image-preview" src="" alt="" style="display:none;" />
+      </div>
+      <div id="image-info"></div>
+      <div id="nav-buttons">
+        <button id="btn-prev">Prev</button>
+        <button id="btn-next">Next</button>
+      </div>
+      <div id="tag-area">
+        <div class="panel-header">Current Tags</div>
+        <div id="current-tags" class="tag-container"></div>
+        <div id="tag-input-area">
+          <input type="text" id="tag-input" placeholder="Add tag (Enter or comma to add)" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar: All Tags -->
+    <div id="sidebar-right">
+      <div class="panel-header">
+        All Tags
+        <input type="text" id="all-tags-search" placeholder="Search tags..." />
+      </div>
+      <div id="all-tags" class="panel-body"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
