@@ -9,10 +9,12 @@ body {
   background: #1e1e2e;
   color: #cdd6f4;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Top Bar */
@@ -20,7 +22,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   padding: 8px 16px;
   background: #181825;
   border-bottom: 1px solid #313244;
@@ -32,11 +34,13 @@ body {
   font-weight: 700;
   color: #cba6f7;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .topbar-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
 .upload-btn {
@@ -55,11 +59,34 @@ body {
   background: #585b70;
 }
 
+/* Mobile toggle buttons — hidden on desktop */
+.mobile-toggle {
+  display: none;
+  background: #45475a;
+  color: #cdd6f4;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.mobile-toggle:hover {
+  background: #585b70;
+}
+
+/* Mobile overlay */
+#mobile-overlay {
+  display: none;
+}
+
 /* Main Layout */
 #main {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 /* Left Sidebar */
@@ -115,6 +142,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 #image-container {
@@ -130,6 +158,8 @@ body {
 #image-placeholder {
   color: #585b70;
   font-size: 16px;
+  text-align: center;
+  padding: 20px;
 }
 
 #image-preview {
@@ -312,4 +342,160 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #585b70;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE (< 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Show mobile toggle buttons */
+  .mobile-toggle {
+    display: block;
+  }
+
+  .topbar-title {
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Overlay */
+  #mobile-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  #mobile-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Sidebars slide over as drawers */
+  #sidebar-left {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    border-right: 1px solid #313244;
+  }
+
+  #sidebar-left.open {
+    transform: translateX(0);
+  }
+
+  #sidebar-right {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 100;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    border-left: 1px solid #313244;
+  }
+
+  #sidebar-right.open {
+    transform: translateX(0);
+  }
+
+  /* File items bigger on mobile for touch */
+  #file-list .file-item {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  #all-tags .all-tag-item {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  /* Center takes full width */
+  #center {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* Tag area adjustments */
+  #tag-area {
+    max-height: 180px;
+  }
+
+  .tag-chip {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  #tag-input {
+    font-size: 16px; /* prevent iOS zoom on focus */
+    padding: 10px 12px;
+  }
+
+  /* Nav buttons larger touch targets */
+  #nav-buttons button {
+    padding: 8px 24px;
+    font-size: 14px;
+  }
+
+  /* Image info */
+  #image-info {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  #image-placeholder {
+    font-size: 14px;
+  }
+}
+
+/* ============================================================
+   SMALL MOBILE (< 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  #topbar {
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .topbar-title {
+    font-size: 12px;
+  }
+
+  .upload-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  #sidebar-left {
+    width: 80vw;
+  }
+
+  #sidebar-right {
+    width: 85vw;
+  }
+
+  #nav-buttons {
+    gap: 6px;
+    padding: 4px;
+  }
+
+  #nav-buttons button {
+    padding: 8px 16px;
+    font-size: 13px;
+    flex: 1;
+  }
+
+  #tag-area {
+    max-height: 150px;
+  }
 }

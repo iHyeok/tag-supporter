@@ -1,18 +1,12 @@
-// GET /api/images/:id — get image details + serve image
+// GET /api/images/:id — serve image binary from R2
 // DELETE /api/images/:id — delete image
 export async function onRequestGet(context) {
   const { env, params } = context;
   const id = params.id;
 
   try {
-    // Check if this is a thumbnail request
-    const url = new URL(context.request.url);
-    if (url.pathname.endsWith('/thumb')) {
-      return handleThumb(env, id);
-    }
-
     const image = await env.DB.prepare(
-      'SELECT * FROM images WHERE id = ?'
+      'SELECT r2_key, mime_type FROM images WHERE id = ?'
     ).bind(id).first();
 
     if (!image) {
@@ -22,12 +16,16 @@ export async function onRequestGet(context) {
     // Serve the actual image from R2
     const obj = await env.BUCKET.get(image.r2_key);
     if (!obj) {
-      return Response.json({ error: 'Image file not found in storage' }, { status: 404 });
+      return Response.json(
+        { error: 'Image file not found in storage', r2_key: image.r2_key },
+        { status: 404 }
+      );
     }
 
     const headers = new Headers();
     headers.set('Content-Type', image.mime_type || 'image/png');
     headers.set('Cache-Control', 'public, max-age=86400');
+    headers.set('Access-Control-Allow-Origin', '*');
     return new Response(obj.body, { headers });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
