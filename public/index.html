@@ -2,21 +2,26 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Image Tag Supporter</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <!-- Top Bar -->
   <div id="topbar">
+    <button id="btn-toggle-files" class="mobile-toggle" title="Files">&#9776;</button>
     <div class="topbar-title">Image Tag Supporter</div>
     <div class="topbar-actions">
       <label id="upload-label" class="upload-btn">
-        Upload Images
+        Upload
         <input type="file" id="upload-input" multiple accept="image/*" hidden />
       </label>
+      <button id="btn-toggle-tags" class="mobile-toggle" title="Tags">&#9868;</button>
     </div>
   </div>
+
+  <!-- Mobile Overlay -->
+  <div id="mobile-overlay"></div>
 
   <!-- Main Layout -->
   <div id="main">
@@ -34,8 +39,8 @@
       </div>
       <div id="image-info"></div>
       <div id="nav-buttons">
-        <button id="btn-prev">Prev</button>
-        <button id="btn-next">Next</button>
+        <button id="btn-prev">&#9664; Prev</button>
+        <button id="btn-next">Next &#9654;</button>
       </div>
       <div id="tag-area">
         <div class="panel-header">Current Tags</div>

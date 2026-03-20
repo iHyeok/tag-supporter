@@ -8,11 +8,11 @@ const api = {
     return data.images || [];
   },
 
-  async getImageUrl(id) {
+  getImageUrl(id) {
     return `/api/images/${id}`;
   },
 
-  async getThumbUrl(id) {
+  getThumbUrl(id) {
     return `/api/images/${id}/thumb`;
   },
 
@@ -72,6 +72,48 @@ const allTagsEl = document.getElementById('all-tags');
 const allTagsSearch = document.getElementById('all-tags-search');
 const uploadInput = document.getElementById('upload-input');
 
+// Mobile panel toggle buttons
+const btnToggleFiles = document.getElementById('btn-toggle-files');
+const btnToggleTags = document.getElementById('btn-toggle-tags');
+const sidebarLeft = document.getElementById('sidebar-left');
+const sidebarRight = document.getElementById('sidebar-right');
+const overlay = document.getElementById('mobile-overlay');
+
+// ============================================================
+// Mobile Panel Toggling
+// ============================================================
+function closePanels() {
+  sidebarLeft.classList.remove('open');
+  sidebarRight.classList.remove('open');
+  overlay.classList.remove('visible');
+}
+
+if (btnToggleFiles) {
+  btnToggleFiles.addEventListener('click', () => {
+    const isOpen = sidebarLeft.classList.contains('open');
+    closePanels();
+    if (!isOpen) {
+      sidebarLeft.classList.add('open');
+      overlay.classList.add('visible');
+    }
+  });
+}
+
+if (btnToggleTags) {
+  btnToggleTags.addEventListener('click', () => {
+    const isOpen = sidebarRight.classList.contains('open');
+    closePanels();
+    if (!isOpen) {
+      sidebarRight.classList.add('open');
+      overlay.classList.add('visible');
+    }
+  });
+}
+
+if (overlay) {
+  overlay.addEventListener('click', closePanels);
+}
+
 // ============================================================
 // Initialization
 // ============================================================
@@ -94,7 +136,10 @@ function renderFileList() {
     const div = document.createElement('div');
     div.className = 'file-item' + (index === currentIndex ? ' active' : '');
     div.textContent = img.filename;
-    div.addEventListener('click', () => selectImage(index));
+    div.addEventListener('click', () => {
+      selectImage(index);
+      closePanels();
+    });
     fileListEl.appendChild(div);
   });
 }
@@ -107,12 +152,24 @@ async function selectImage(index) {
   currentIndex = index;
   const img = imageList[currentIndex];
 
-  // Update image
-  const imgUrl = await api.getImageUrl(img.id);
+  // Update image — use direct URL (synchronous, no await needed)
+  const imgUrl = api.getImageUrl(img.id);
   imagePreview.src = imgUrl;
   imagePreview.style.display = 'block';
   imagePlaceholder.style.display = 'none';
   imageInfo.textContent = `${img.filename}  (${currentIndex + 1} / ${imageList.length})`;
+
+  // Handle image load errors
+  imagePreview.onerror = () => {
+    imagePreview.style.display = 'none';
+    imagePlaceholder.style.display = 'block';
+    imagePlaceholder.textContent = `Failed to load image: ${img.filename}`;
+  };
+
+  imagePreview.onload = () => {
+    imagePlaceholder.style.display = 'none';
+    imagePreview.style.display = 'block';
+  };
 
   // Update file list highlight
   const items = fileListEl.querySelectorAll('.file-item');
@@ -221,6 +278,27 @@ document.addEventListener('keydown', (e) => {
     if (currentIndex < imageList.length - 1) selectImage(currentIndex + 1);
   }
 });
+
+// Swipe support for mobile
+let touchStartX = 0;
+let touchEndX = 0;
+const imageContainer = document.getElementById('image-container');
+
+imageContainer.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+imageContainer.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if (Math.abs(diff) > 60) {
+    if (diff > 0 && currentIndex < imageList.length - 1) {
+      selectImage(currentIndex + 1);
+    } else if (diff < 0 && currentIndex > 0) {
+      selectImage(currentIndex - 1);
+    }
+  }
+}, { passive: true });
 
 // ============================================================
 // All Tags (Right Sidebar)
