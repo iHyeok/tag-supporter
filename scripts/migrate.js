@@ -64,7 +64,7 @@ async function main() {
     // 1. Upload original to R2
     try {
       execSync(
-        `npx wrangler r2 object put "${BUCKET_NAME}/${r2Key}" --file="${imagePath}" --content-type="image/${path.extname(filename).slice(1)}"`,
+        `npx wrangler r2 object put "${BUCKET_NAME}/${r2Key}" --file="${imagePath}" --content-type="image/${path.extname(filename).slice(1)}" --remote`,
         { stdio: 'pipe' }
       );
     } catch (e) {
@@ -86,7 +86,7 @@ async function main() {
           .toFile(tmpThumbPath);
 
         execSync(
-          `npx wrangler r2 object put "${BUCKET_NAME}/${thumbKey}" --file="${tmpThumbPath}" --content-type="image/webp"`,
+          `npx wrangler r2 object put "${BUCKET_NAME}/${thumbKey}" --file="${tmpThumbPath}" --content-type="image/webp" --remote`,
           { stdio: 'pipe' }
         );
 
