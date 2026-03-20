@@ -106,7 +106,22 @@ async function main() {
       }
     }
 
-    // 4. Insert into D1
+    // 4. Check for duplicate filename in D1
+    try {
+      const checkResult = execSync(
+        `npx wrangler d1 execute ${DB_NAME} --remote --command="SELECT id FROM images WHERE filename = '${filename}'" --json`,
+        { stdio: 'pipe', encoding: 'utf-8' }
+      );
+      const parsed = JSON.parse(checkResult);
+      if (parsed[0]?.results?.length > 0) {
+        console.log(`  Skipped (already exists in DB)`);
+        continue;
+      }
+    } catch (e) {
+      // If check fails, proceed with insert (UNIQUE constraint will catch duplicates)
+    }
+
+    // 5. Insert into D1
     const fileSize = fs.statSync(imagePath).size;
     const ext = path.extname(filename).slice(1).toLowerCase();
     const mimeType = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
