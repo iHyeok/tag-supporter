@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS images (
   id         TEXT PRIMARY KEY,
-  filename   TEXT NOT NULL,
+  filename   TEXT NOT NULL UNIQUE,
   r2_key     TEXT NOT NULL,
   thumb_key  TEXT,
   mime_type  TEXT,
