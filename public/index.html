@@ -12,6 +12,7 @@
     <button id="btn-toggle-files" class="mobile-toggle" title="Files">&#9776;</button>
     <div class="topbar-title">Image Tag Supporter</div>
     <div class="topbar-actions">
+      <button id="btn-gallery-toggle" class="gallery-toggle-btn" title="Gallery View">&#9871;</button>
       <label id="upload-label" class="upload-btn">
         Upload
         <input type="file" id="upload-input" multiple accept="image/*" hidden />
@@ -22,6 +23,11 @@
 
   <!-- Mobile Overlay -->
   <div id="mobile-overlay"></div>
+
+  <!-- Gallery View -->
+  <div id="gallery-view" style="display:none;">
+    <div id="gallery-grid"></div>
+  </div>
 
   <!-- Main Layout -->
   <div id="main">
