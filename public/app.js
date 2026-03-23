@@ -72,6 +72,14 @@ const allTagsEl = document.getElementById('all-tags');
 const allTagsSearch = document.getElementById('all-tags-search');
 const uploadInput = document.getElementById('upload-input');
 
+// Gallery elements
+const galleryView = document.getElementById('gallery-view');
+const galleryGrid = document.getElementById('gallery-grid');
+const btnGalleryToggle = document.getElementById('btn-gallery-toggle');
+const mainView = document.getElementById('main');
+let isGalleryMode = false;
+let galleryTagCounts = {}; // { imageId: tagCount }
+
 // Mobile panel toggle buttons
 const btnToggleFiles = document.getElementById('btn-toggle-files');
 const btnToggleTags = document.getElementById('btn-toggle-tags');
@@ -115,6 +123,63 @@ if (overlay) {
 }
 
 // ============================================================
+// Gallery Mode
+// ============================================================
+function toggleGalleryMode() {
+  isGalleryMode = !isGalleryMode;
+  if (isGalleryMode) {
+    mainView.style.display = 'none';
+    galleryView.style.display = '';
+    btnGalleryToggle.classList.add('active');
+    btnGalleryToggle.innerHTML = '&#9776;'; // list icon
+    btnGalleryToggle.title = 'Editor View';
+    renderGallery();
+  } else {
+    galleryView.style.display = 'none';
+    mainView.style.display = '';
+    btnGalleryToggle.classList.remove('active');
+    btnGalleryToggle.innerHTML = '&#9871;'; // grid icon
+    btnGalleryToggle.title = 'Gallery View';
+  }
+}
+
+btnGalleryToggle.addEventListener('click', toggleGalleryMode);
+
+async function loadGalleryTagCounts() {
+  galleryTagCounts = {};
+  const promises = imageList.map(async (img) => {
+    const tags = await api.readTags(img.id);
+    galleryTagCounts[img.id] = tags.length;
+  });
+  await Promise.all(promises);
+}
+
+function renderGallery() {
+  galleryGrid.innerHTML = '';
+  imageList.forEach((img, index) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item' + (index === currentIndex ? ' active' : '');
+
+    const thumbUrl = api.getThumbUrl(img.id);
+    const fullUrl = api.getImageUrl(img.id);
+
+    item.innerHTML = `
+      <img src="${thumbUrl}" alt="${img.filename}" loading="lazy"
+           onerror="this.src='${fullUrl}'" />
+      <div class="gallery-filename">${img.filename}</div>
+      ${galleryTagCounts[img.id] ? `<div class="gallery-tag-count">${galleryTagCounts[img.id]} tags</div>` : ''}
+    `;
+
+    item.addEventListener('click', () => {
+      selectImage(index);
+      toggleGalleryMode(); // switch to editor
+    });
+
+    galleryGrid.appendChild(item);
+  });
+}
+
+// ============================================================
 // Initialization
 // ============================================================
 async function init() {
@@ -122,6 +187,10 @@ async function init() {
   allTags = await api.getAllTags();
   renderFileList();
   renderAllTags();
+
+  // Preload tag counts for gallery
+  loadGalleryTagCounts();
+
   if (imageList.length > 0) {
     selectImage(0);
   }
@@ -231,6 +300,7 @@ function debouncedSave() {
     if (currentIndex < 0) return;
     const img = imageList[currentIndex];
     await api.saveTags(img.id, currentTags);
+    galleryTagCounts[img.id] = currentTags.length;
   }, 300);
 }
 
@@ -272,6 +342,15 @@ btnNext.addEventListener('click', () => {
 
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'g' || e.key === 'G') {
+    toggleGalleryMode();
+    return;
+  }
+  if (e.key === 'Escape' && isGalleryMode) {
+    toggleGalleryMode();
+    return;
+  }
+  if (isGalleryMode) return; // no arrow nav in gallery
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
     if (currentIndex > 0) selectImage(currentIndex - 1);
   } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
