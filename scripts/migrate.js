@@ -81,8 +81,8 @@ async function main() {
         const tmpThumbPath = path.join(require('os').tmpdir(), thumbName);
 
         await sharp(imagePath)
-          .resize(150, null, { withoutEnlargement: true })
-          .webp({ quality: 80 })
+          .resize(512, 512, { fit: 'cover', position: 'left top', withoutEnlargement: true })
+          .webp({ quality: 90 })
           .toFile(tmpThumbPath);
 
         execSync(
