@@ -71,8 +71,13 @@ export async function onRequestDelete(context) {
       await env.BUCKET.delete(image.thumb_key);
     }
 
-    // Delete from DB (CASCADE will remove tags)
-    await env.DB.prepare('DELETE FROM images WHERE id = ?').bind(id).run();
+    // Delete from DB (explicit cleanup — FK cascade is not guaranteed in all envs)
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM set_tags WHERE set_id IN (SELECT id FROM tag_sets WHERE image_id = ?)').bind(id),
+      env.DB.prepare('DELETE FROM tag_sets WHERE image_id = ?').bind(id),
+      env.DB.prepare('DELETE FROM tags WHERE image_id = ?').bind(id),
+      env.DB.prepare('DELETE FROM images WHERE id = ?').bind(id),
+    ]);
 
     return Response.json({ success: true });
   } catch (e) {

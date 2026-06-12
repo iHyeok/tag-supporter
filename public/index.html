@@ -11,8 +11,19 @@
   <div id="topbar">
     <button id="btn-toggle-files" class="mobile-toggle" title="Files">&#9776;</button>
     <div class="topbar-title">Image Tag Supporter</div>
+    <div class="ctx-selects">
+      <select id="purpose-select" title="태그셋 용도">
+        <option value="">용도: 전체</option>
+        <option value="inference">✨ 추론 (프롬프트)</option>
+        <option value="train-style">🎨 학습 · 스타일</option>
+        <option value="train-char">👤 학습 · 캐릭터</option>
+      </select>
+      <select id="model-select" title="대상 모델"></select>
+    </div>
     <div class="topbar-actions">
+      <button id="btn-guide-toggle" class="gallery-toggle-btn" title="Tag Guide">&#128214;</button>
       <button id="btn-gallery-toggle" class="gallery-toggle-btn" title="Gallery View">&#9871;</button>
+      <button id="btn-export" class="upload-btn" title="Export tag files">Export</button>
       <label id="upload-label" class="upload-btn">
         Upload
         <input type="file" id="upload-input" multiple accept="image/*" hidden />
@@ -27,6 +38,16 @@
   <!-- Gallery View -->
   <div id="gallery-view" style="display:none;">
     <div id="gallery-grid"></div>
+  </div>
+
+  <!-- Tag Guide View -->
+  <div id="guide-view" style="display:none;">
+    <div id="guide-model-tips"></div>
+    <div id="guide-controls">
+      <input type="text" id="guide-search" placeholder="가이드 검색 (한국어/영문/태그)..." />
+      <div id="guide-category-chips"></div>
+    </div>
+    <div id="guide-sections"></div>
   </div>
 
   <!-- Main Layout -->
@@ -49,7 +70,9 @@
         <button id="btn-next">Next &#9654;</button>
       </div>
       <div id="tag-area">
-        <div class="panel-header">Current Tags</div>
+        <div class="panel-header tag-area-header">
+          <div id="set-tabs"></div>
+        </div>
         <div id="current-tags" class="tag-container"></div>
         <div id="tag-input-area">
           <input type="text" id="tag-input" placeholder="Add tag (Enter or comma to add)" />
@@ -57,16 +80,88 @@
       </div>
     </div>
 
-    <!-- Right Sidebar: All Tags -->
+    <!-- Right Sidebar: All Tags / Guide Suggestions -->
     <div id="sidebar-right">
       <div class="panel-header">
-        All Tags
+        <div class="sidebar-tabs">
+          <button id="tab-used" class="sidebar-tab active">사용중</button>
+          <button id="tab-suggest" class="sidebar-tab">가이드 추천</button>
+        </div>
         <input type="text" id="all-tags-search" placeholder="Search tags..." />
       </div>
       <div id="all-tags" class="panel-body"></div>
     </div>
   </div>
 
+  <!-- Tag Set Modal -->
+  <div id="set-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-title" id="set-modal-title">새 태그셋</div>
+      <label class="modal-label">이름
+        <input type="text" id="set-name-input" placeholder="태그셋 이름" />
+      </label>
+      <label class="modal-label">용도
+        <select id="set-purpose-select">
+          <option value="inference">✨ 추론 (프롬프트)</option>
+          <option value="train-style">🎨 학습 · 스타일</option>
+          <option value="train-char">👤 학습 · 캐릭터</option>
+        </select>
+      </label>
+      <div class="modal-hint" id="set-purpose-hint"></div>
+      <label class="modal-label">대상 모델
+        <select id="set-model-select"></select>
+      </label>
+      <label class="modal-label" id="set-copy-row">복사할 태그
+        <select id="set-copy-select"></select>
+      </label>
+      <div class="modal-actions">
+        <button id="set-modal-delete" class="modal-btn danger" style="display:none;">삭제</button>
+        <span class="modal-actions-spacer"></span>
+        <button id="set-modal-cancel" class="modal-btn">취소</button>
+        <button id="set-modal-save" class="modal-btn primary">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tag Guide Modal -->
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card guide-modal-card">
+      <button id="guide-modal-close" class="modal-close">&times;</button>
+      <div id="guide-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-title">태그 파일 내보내기</div>
+      <label class="modal-label">용도
+        <select id="export-purpose-select">
+          <option value="inference">✨ 추론 (프롬프트)</option>
+          <option value="train-style">🎨 학습 · 스타일</option>
+          <option value="train-char">👤 학습 · 캐릭터</option>
+        </select>
+      </label>
+      <label class="modal-label">대상 모델
+        <select id="export-model-select"></select>
+      </label>
+      <label class="modal-label">형식
+        <select id="export-format-select">
+          <option value="zip">이미지별 .txt (zip) — LoRA 학습 캡션용</option>
+          <option value="json">JSON 한 파일</option>
+        </select>
+      </label>
+      <div class="modal-hint">이미지마다 선택한 용도와 일치하는 태그셋을 찾아 내보냅니다. 모델을 지정하면 해당 모델 셋 → 공용 셋 순으로 선택합니다.</div>
+      <div class="modal-hint" id="export-status"></div>
+      <div class="modal-actions">
+        <span class="modal-actions-spacer"></span>
+        <button id="export-modal-cancel" class="modal-btn">취소</button>
+        <button id="export-modal-run" class="modal-btn primary">내보내기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="guide-data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
